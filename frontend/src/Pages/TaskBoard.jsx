@@ -19,7 +19,7 @@ function TaskBoard() {
    
     var [progress,setProgress] = useState((project ? project.completed_tasks : 0/ project ? project.total_tasks : 0)*100)
 
-    var [tasks, setTasks] = useState(project ? project.projectTask:null)
+   
 
     const [messages, setMessages] = useState([]);
 
@@ -57,7 +57,8 @@ function TaskBoard() {
     
           var result = await response.json();
           console.log(result)
-          return setProject(result);
+          setProject(result);
+          setTasks(result.projectTask || []);
         }
         catch(err){
           console.log(err.message)
@@ -88,30 +89,41 @@ function TaskBoard() {
         getUsers()
       },[])
 
+      var [tasks, setTasks] = useState([])
+      console.log(tasks)
+
+      const socketRef = useRef(null);
 
         // websocker connection
         useEffect(() => {
           if (project) {
-              const socket = new WebSocket(`ws://127.0.0.1:8000/ws/project/${project.id}`);
-              socket.onopen = () => {
+
+            socketRef.current = new WebSocket(`ws://127.0.0.1:8000/ws/project/${project.id}`);
+
+              socketRef.current.onopen = () => {
                   console.log('WebSocket connection established');
               };
   
-              socket.onmessage = (event) => {
-                  const tasks = event.data;
-                  setTasks((prevTasks) => [...prevTasks, tasks]);
+              socketRef.current.onmessage = (event) => {
+                  const tasks = JSON.parse(event.data);
+                  
+                  if (tasks.create_task) {
+                    const task = tasks.create_task.task;
+                    
+                    setTasks((prevTasks) => [...prevTasks, task]);
+                  }
               };
   
-              socket.onclose = () => {
+              socketRef.current.onclose = () => {
                   console.log('WebSocket connection closed');
               };
   
-              socket.onerror = (error) => {
+              socketRef.current.onerror = (error) => {
                   console.error('WebSocket error:', error);
               };
   
               return () => {
-                  socket.close();
+                socketRef.current.close();
               };
           }
       }, [project]);
@@ -143,11 +155,94 @@ function TaskBoard() {
 
       const [formData, setFormData] = useState({
         taskName: "",
-        TaskDescription: "",
-        TaskStatus: "",
-        assignedTo:[selectedUsers]
+        taskDescription: "",
+        taskStatus: "P",
+        assignedTo:[]
       });
-          
+
+      useEffect(() => {
+        setFormData((prev) => ({
+            ...prev,
+            assignedTo: selectedUsers, // Assign the array directly
+        }));
+    }, [selectedUsers]);
+
+      const handleChange = (event) => {
+        const { name, value } = event.target;
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value, // Dynamically update the correct key
+        }));
+    };
+
+      
+
+
+      const handleSend = (e) => {
+        e.preventDefault();
+        
+        try {
+            if (socketRef.current.readyState === WebSocket.OPEN) {
+              socketRef.current.send(
+                    JSON.stringify({
+                        data: formData,
+                        action: "create",
+                    })
+                );
+            } else {
+                console.warn("WebSocket is not open. Attempting to reconnect...");
+                // Handle reconnection logic here if needed
+            }
+        } catch (error) {
+            console.error("Error sending message:", error);
+        }
+    };
+
+    const [pendingTasks, setPendingTasks] = useState([]);
+    const [onHoldTasks, setOnHoldTasks] = useState([]);
+    const [completedTasks, setCompletedTasks] = useState([]);
+    const [inProgressTasks, setInProgressTasks] = useState([]);
+
+    useEffect(() => {
+        separateTasksByStatus();
+    }, [tasks]);
+
+    const separateTasksByStatus = () => {
+        const pending = [];
+        const onHold = [];
+        const completed = [];
+        const inProgress = [];
+
+        tasks.forEach((task) => {
+            switch (task.taskStatus) {
+                case 'P':
+                    pending.push(task);
+                    break;
+                case 'OH':
+                    onHold.push(task);
+                    break;
+                case 'C':
+                    completed.push(task);
+                    break;
+                case 'IP':
+                    inProgress.push(task);
+                    break;
+                default:
+                    break;
+            }
+        });
+
+        setPendingTasks(pending);
+        setOnHoldTasks(onHold);
+        setCompletedTasks(completed);
+        setInProgressTasks(inProgress);
+    };
+    console.log(pendingTasks)
+    console.log(onHoldTasks)
+    console.log(completedTasks)
+    console.log(inProgressTasks)
+
+      
         
       
 
@@ -184,22 +279,43 @@ function TaskBoard() {
               </span>
             </button>
 
-            {handleAdd ? (<form  class="bg-white shadow rounded-lg p-4 m-5 absolute flex flex-col gap-2">
-                            <h3 class="text-xl font-semibold"><input type="text" class="ml-2 border border-gray-300 rounded-md px-2 py-1" name='taskName' placeholder="Enter Task Title(s)"/></h3>
-                            <p class="text-gray-600"><input type="text" class="ml-2 border border-gray-300 rounded-md px-2 py-1" name='taskDescription' placeholder="Enter Task Description"/></p>
+                        {handleAdd ? (<form onSubmit={handleSend} className="bg-white shadow rounded-lg p-4 m-5 absolute flex flex-col gap-2">
+                <h3 className="text-xl font-semibold">
+                    <input 
+                        type="text" 
+                        className="ml-2 border border-gray-300 rounded-md px-2 py-1" 
+                        name="taskName" 
+                        value={formData.taskName}
+                        onChange={handleChange} 
+                        placeholder="Enter Task Title"
+                    />
+                </h3>
+                <p className="text-gray-600">
+                    <input 
+                        type="text" 
+                        className="ml-2 border border-gray-300 rounded-md px-2 py-1" 
+                        name="taskDescription" 
+                        value={formData.taskDescription}
+                        onChange={handleChange} 
+                        placeholder="Enter Task Description"
+                    />
+                </p>
 
-                            <div class="flex items-center mt-2">
-                              <span class="font-semibold">Status:</span>
-                              <select class="ml-2 border border-gray-300 rounded-md px-2 py-1" name='taskStatus'>
-                                <option value="pending">Pending</option>
-                                <option value="in-progress">In Progress</option>
-                                <option value="on-hold">On Hold</option>
-                                
-                              </select>
-                            </div>
+                <div className="flex items-center mt-2">
+                    <span className="font-semibold">Status:</span>
+                    <select 
+                        className="ml-2 border border-gray-300 rounded-md px-2 py-1" 
+                        name="taskStatus" 
+                        value={formData.taskStatus}
+                        onChange={handleChange}
+                    >
+                        <option value="P">Pending</option>
+                        <option value="IP">In Progress</option>
+                        <option value="OH">On Hold</option>
+                    </select>
+                </div>
 
-
-                            <span className="font-semibold">Search User:</span>
+                <span className="font-semibold">Search User:</span>
                               <input
                                 type="text"
                                 placeholder="Search Users"
@@ -240,11 +356,15 @@ function TaskBoard() {
                               
                             </div>
 
-                            <div class="mt-4">
-                              <button class="bg-blue-500 text-white rounded-md px-4 py-2 hover:bg-blue-600">Create</button>
-                            </div>
-                        </form>):<></>}
+                <div className="mt-4">
+                    <button className="bg-blue-500 text-white rounded-md px-4 py-2 hover:bg-blue-600" type="submit">
+                        Create Task
+                    </button>
+                </div>
+            </form>):<></>}
             </div>
+
+
            
 
         </div>
@@ -254,38 +374,39 @@ function TaskBoard() {
           <div className=' bg-blue-100 m-2'>
             <h1 className='h-10 bg-blue-400 text-white text-xl text-center pt-1' >Pending</h1>
             <div className='overflow-y-auto max-h-[600px] m-5'>
+            {pendingTasks.map((task, index) => (
+                <Task TaskName={task.taskName} TaskDescription={task.taskDescription} TaskStatus={"Pending"} DueDate={'05/12/05'} AssignedTo={task.assignedTo} AssignedToAvatar={"null.jpg"}/>
+            ))}
               
-              <Task TaskName={"Sleep"} TaskDescription={'go to sleep'} TaskStatus={"Pending"} DueDate={'05/12/05'} AssignedTo={"Cj"} AssignedToAvatar={"null.jpg"}/>
+              
             </div>
           </div>
             
           <div className='bg-orange-100 m-2'>
             <h1 className='h-10 bg-amber-400 text-white text-xl text-center pt-1'>In Progress</h1>
             <div className='overflow-y-auto max-h-[600px] m-5'>
-              <Task TaskName={"Sleep"} TaskDescription={'go to sleep'} TaskStatus={"In Progress"} DueDate={'05/12/05'} AssignedTo={"Cj"} AssignedToAvatar={"null.jpg"}/>
-              <Task TaskName={"Sleep"} TaskDescription={'go to sleep'} TaskStatus={"Pending"} DueDate={'05/12/05'} AssignedTo={"Cj"} AssignedToAvatar={"null.jpg"}/>
-              <Task TaskName={"Sleep"} TaskDescription={'go to sleep'} TaskStatus={"Pending"} DueDate={'05/12/05'} AssignedTo={"Cj"} AssignedToAvatar={"null.jpg"}/>
-              <Task TaskName={"Sleep"} TaskDescription={'go to sleep'} TaskStatus={"Pending"} DueDate={'05/12/05'} AssignedTo={"Cj"} AssignedToAvatar={"null.jpg"}/>
+            {inProgressTasks.map((task, index) => (
+                <Task TaskName={task.taskName} TaskDescription={task.taskDescription} TaskStatus={"In Progress"} DueDate={'05/12/05'} AssignedTo={task.assignedTo} AssignedToAvatar={"null.jpg"}/>
+            ))}
             </div>
           </div>
 
           <div className='bg-red-100 m-2'>
             <h1 className='h-10 bg-red-400 text-white text-xl text-center pt-1'>On Hold</h1>
             <div className='overflow-y-auto max-h-[600px] m-5'>
-              <Task TaskName={"Sleep"} TaskDescription={'go to sleep'} TaskStatus={"On Hold"} DueDate={'05/12/05'} AssignedTo={"Cj"} AssignedToAvatar={"null.jpg"}/>
-              <Task TaskName={"Sleep"} TaskDescription={'go to sleep'} TaskStatus={"Pending"} DueDate={'05/12/05'} AssignedTo={"Cj"} AssignedToAvatar={"null.jpg"}/>
-              <Task TaskName={"Sleep"} TaskDescription={'go to sleep'} TaskStatus={"Pending"} DueDate={'05/12/05'} AssignedTo={"Cj"} AssignedToAvatar={"null.jpg"}/>
-              <Task TaskName={"Sleep"} TaskDescription={'go to sleep'} TaskStatus={"Pending"} DueDate={'05/12/05'} AssignedTo={"Cj"} AssignedToAvatar={"null.jpg"}/>
+            {onHoldTasks.map((task, index) => (
+                <Task TaskName={task.taskName} TaskDescription={task.taskDescription} TaskStatus={"On Hold"} DueDate={'05/12/05'} AssignedTo={task.assignedTo} AssignedToAvatar={"null.jpg"}/>
+            ))}
+           
             </div>
           </div>
 
           <div className='bg-teal-100 m-2'>
             <h1 className='h-10 bg-teal-400 text-white text-xl text-center pt-1'>Completed</h1>
             <div className='overflow-y-auto max-h-[600px] m-5'>
-              <Task TaskName={"Sleep"} TaskDescription={'go to sleep'} TaskStatus={"Completed"} DueDate={'05/12/05'} AssignedTo={"Cj"} AssignedToAvatar={"null.jpg"}/>
-              <Task TaskName={"Sleep"} TaskDescription={'go to sleep'} TaskStatus={"Pending"} DueDate={'05/12/05'} AssignedTo={"Cj"} AssignedToAvatar={"null.jpg"}/>
-              <Task TaskName={"Sleep"} TaskDescription={'go to sleep'} TaskStatus={"Pending"} DueDate={'05/12/05'} AssignedTo={"Cj"} AssignedToAvatar={"null.jpg"}/>
-              <Task TaskName={"Sleep"} TaskDescription={'go to sleep'} TaskStatus={"Pending"} DueDate={'05/12/05'} AssignedTo={"Cj"} AssignedToAvatar={"null.jpg"}/>
+            {completedTasks.map((task, index) => (
+                <Task TaskName={task.taskName} TaskDescription={task.taskDescription} TaskStatus={"Completed"} DueDate={'05/12/05'} AssignedTo={task.assignedTo} AssignedToAvatar={"null.jpg"}/>
+            ))}
             </div>
           </div>
         </div>

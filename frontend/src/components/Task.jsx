@@ -3,7 +3,7 @@ import React, { useRef, useState } from 'react'
 import { Box, Dialog, Modal } from '@mui/material'
 
 
-function Task({TaskName,TaskDescription,TaskStatus,AssignedTo,AssignedToAvatar,DueDate}) {
+function Task({TaskName,TaskDescription,TaskStatus,AssignedTo=[],AssignedToAvatar,DueDate}) {
 
   let statusColor = "bg-gray-400"; // Default color
 
@@ -100,9 +100,20 @@ function Task({TaskName,TaskDescription,TaskStatus,AssignedTo,AssignedToAvatar,D
 
       <div className="flex flex-col items-center mt-4">
         <div className="flex flex-row">
-          <img src="https://via.placeholder.com/32" alt="Avatar 1" className="rounded-full w-8 h-8 mr-2" />
+         
           
-          <span className="text-gray-600">Assigned to:{AssignedTo}</span>
+          <span className="text-gray-600">
+              Assigned to: {Array.isArray(AssignedTo) && AssignedTo.length > 0 ? (
+                  AssignedTo.map((user, index) => (
+                      <span key={index}>
+                          {user.username}
+                          {index < AssignedTo.length - 1 && ', '}
+                      </span>
+                  ))
+              ) : (
+                  <span>No users assigned</span>
+              )}
+          </span>
         </div>
 
         {/* <div class="flex flex-row items-center mt-2 absolute">
