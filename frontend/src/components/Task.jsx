@@ -1,9 +1,9 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import { Box, Dialog, Modal } from '@mui/material'
 
 
-function Task({TaskName,TaskDescription,TaskStatus,AssignedTo=[],AssignedToAvatar,DueDate}) {
+function Task({TaskID,TaskName,TaskDescription,TaskStatus,AssignedTo=[],AssignedToAvatar,DueDate,projectID,updateFunc}) {
 
   let statusColor = "bg-gray-400"; // Default color
 
@@ -28,6 +28,27 @@ function Task({TaskName,TaskDescription,TaskStatus,AssignedTo=[],AssignedToAvata
   var [handleDelete, setHandleDelete] = useState(false)
   var taskMenu = useRef()
 
+  const [formData, setFormData] = useState({
+          taskID:TaskID,
+          taskName: TaskName,
+          taskDescription: TaskDescription,
+          taskStatus: TaskStatus,
+        });
+  
+        const handleChange = (event) => {
+          const { name, value } = event.target;
+          setFormData((prev) => ({
+              ...prev,
+              [name]: value, // Dynamically update the correct key
+          }));
+      };
+
+    const handleSubmit = (e) => {
+      e.preventDefault();
+      updateFunc(e,formData)
+    }
+
+  
   return (
     <div className="bg-white rounded-lg p-4 shadow m-3">
       <div className="flex justify-between mb-2">
@@ -60,26 +81,40 @@ function Task({TaskName,TaskDescription,TaskStatus,AssignedTo=[],AssignedToAvata
           >
             <div className="bg-white shadow rounded-lg p-4">
               <h3 className="text-xl font-semibold">Edit Task</h3>
+              <form action="" onSubmit={handleSubmit}>
               <input
                 type="text"
                 className="ml-2 border border-gray-300 rounded-md px-2 py-1 w-full"
                 placeholder="Enter Task Title(s)"
+                value={formData.taskName}
+                onChange={handleChange}
+                name="taskName"
               />
               <textarea
                 className="mt-2 border border-gray-300 rounded-md px-2 py-1 w-full"
                 placeholder="Enter Task Description"
-              ></textarea>
+                name='taskDescription'
+                
+                onChange={handleChange}
+              >{formData.taskDescription}</textarea>
               <div className="flex items-center mt-4">
                 <span className="font-semibold">Status:</span>
-                <select className="ml-2 border border-gray-300 rounded-md px-2 py-1">
-                  <option value="pending">Pending</option>
-                  <option value="in-progress">In Progress</option>
-                  <option value="on-hold">On Hold</option>
-                </select>
+                <select 
+                        className="ml-2 border border-gray-300 rounded-md px-2 py-1" 
+                        name="taskStatus" 
+                        value={formData.taskStatus}
+                        onChange={handleChange}
+                    >
+                        <option value="P">Pending</option>
+                        <option value="IP">In Progress</option>
+                        <option value="OH">On Hold</option>
+                        <option value="C">Completed</option>
+                    </select>
               </div>
               <button className="mt-4 bg-blue-500 text-white rounded-md px-4 py-2 hover:bg-blue-600">
                 Update
               </button>
+              </form>
             </div>
           </Dialog>
           

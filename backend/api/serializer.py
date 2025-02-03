@@ -30,7 +30,7 @@ class TaskSerializer(serializers.ModelSerializer):
     assignedTo = UserSerializer(many=True, read_only=True)
     class Meta:
         model = Task
-        fields = ['id', 'taskName', 'taskStatus','assignedTo']
+        fields = ['id', 'taskName','taskDescription', 'taskStatus','assignedTo']
 
 class ProjectSerializer(serializers.ModelSerializer):
     

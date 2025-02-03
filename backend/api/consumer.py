@@ -21,7 +21,7 @@ class TaskConsumer(AsyncJsonWebsocketConsumer):
         
         data = json.loads(text_data)
         action = data.get('action')
-        print(data)
+       
          
 
         if action == 'create':
@@ -46,22 +46,21 @@ class TaskConsumer(AsyncJsonWebsocketConsumer):
             await self.channel_layer.group_send(self.project_name,event)
             
         elif action == 'delete':
-            id = data.get('id')
+            
             
             event = {
                 "type":"delete_task",
-                "id":id
+                "data":data
             }
            
             await self.channel_layer.group_send(self.project_name,event)
             
     async def create_task(self,event):
-        print(event)
+       
         outer_data = event["data"]
-        print(outer_data)
+        
         data = outer_data["data"]
-        print(data)
-        print(data["taskName"])
+        
        
        
         task = await self.create_taskdb(data=data)
@@ -76,7 +75,7 @@ class TaskConsumer(AsyncJsonWebsocketConsumer):
         
     @database_sync_to_async
     def create_taskdb(self,data):
-        print(data)
+        
         
         project = Project.objects.get(id=self.project_id)
         task = Task.objects.create(
@@ -95,6 +94,42 @@ class TaskConsumer(AsyncJsonWebsocketConsumer):
         
         return task_data
     
+    async def update_task(self,event):
+        
+        outer_data = event["data"]
+        
+        data = outer_data["data"]
+        
+        
+        task = await self.update_taskdb(data=data)
+        
+         
+        response = {
+        'task': task
+        }
+        print(f'serializer:{task}')
+    
+   
+        await self.send(text_data=json.dumps({"update_task": response}))
+        
+    @database_sync_to_async
+    def update_taskdb(self,data):
+        
+        
+        project = Project.objects.get(id=self.project_id)
+        task = Task.objects.get(id=data["taskID"])
+        if(task):
+            task.taskName=data["taskName"]
+            task.taskDescription=data["taskDescription"]
+            task.taskStatus=data["taskStatus"]
+            task.save()
+   
+            
+        
+        task_data =  TaskSerializer(task).data
+        
+        
+        return task_data
     
         
            
