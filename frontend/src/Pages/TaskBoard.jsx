@@ -122,6 +122,12 @@ function TaskBoard() {
                       )
                     );
                   }
+
+                  if (tasks.delete_task) {
+                    const deleteTask = tasks.delete_task.task; 
+                  
+                    setTasks(tasks.filter((task) => item.id !== deleteTask.id));
+                  }
               };
   
               socketRef.current.onclose = () => {

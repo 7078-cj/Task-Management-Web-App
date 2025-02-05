@@ -131,6 +131,38 @@ class TaskConsumer(AsyncJsonWebsocketConsumer):
         
         return task_data
     
+    async def delete_task(self,event):
+        
+        outer_data = event["data"]
+        
+        data = outer_data["data"]
+        
+        
+        task = await self.delete_taskdb(data=data)
+        
+         
+        response = {
+        'task': task
+        }
+        print(f'serializer:{task}')
+    
+   
+        await self.send(text_data=json.dumps({"delete_task": response}))
+        
+    @database_sync_to_async
+    def delete_taskdb(self,data):
+        
+        
+        
+        task = Task.objects.get(id=data["taskID"])
+        if(task):
+            task = task.delete()
+   
+            
+        
+        task_data =  TaskSerializer(task).data
+        return task_data
+    
         
            
         
