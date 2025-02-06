@@ -132,19 +132,20 @@ class TaskConsumer(AsyncJsonWebsocketConsumer):
         return task_data
     
     async def delete_task(self,event):
-        
+        print(event)
         outer_data = event["data"]
         
         data = outer_data["data"]
+        print(data)
         
         
-        task = await self.delete_taskdb(data=data)
+        taskID = await self.delete_taskdb(data=data)
         
          
         response = {
-        'task': task
+        'taskID': taskID
         }
-        print(f'serializer:{task}')
+        
     
    
         await self.send(text_data=json.dumps({"delete_task": response}))
@@ -154,14 +155,14 @@ class TaskConsumer(AsyncJsonWebsocketConsumer):
         
         
         
-        task = Task.objects.get(id=data["taskID"])
+        task = Task.objects.get(id=data)
         if(task):
             task = task.delete()
    
             
         
-        task_data =  TaskSerializer(task).data
-        return task_data
+        
+        return data
     
         
            

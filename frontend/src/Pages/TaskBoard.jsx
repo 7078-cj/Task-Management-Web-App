@@ -59,7 +59,7 @@ function TaskBoard() {
           console.log(result)
           setProject(result);
           setTasks(result.projectTask || []);
-          setProgress((project.completed_tasks / (project.total_tasks || 1)) * 100)
+          setProgress((result.completed_tasks / (result.total_tasks || 1)) * 100)
         }
         catch(err){
           console.log(err.message)
@@ -106,15 +106,24 @@ function TaskBoard() {
               };
   
               socketRef.current.onmessage = (event) => {
-                  const tasks = JSON.parse(event.data);
+                  const socketTasks = JSON.parse(event.data);
                   
-                  if (tasks.create_task) {
-                    const task = tasks.create_task.task;
+                  
+                  if (socketTasks.create_task) {
+                    const task = socketTasks.create_task.task;
                     
                     setTasks((prevTasks) => [...prevTasks, task]);
+                    setHandleAdd(false)
+                    setFormData({
+                      taskName: "",
+                      taskDescription: "",
+                      taskStatus: "P",
+                      assignedTo:[]
+                    })
+                    setSelectedUsers([])
                   }
-                  if (tasks.update_task) {
-                    const updatedTask = tasks.update_task.task; 
+                  if (socketTasks.update_task) {
+                    const updatedTask = socketTasks.update_task.task; 
                   
                     setTasks((prevTasks) =>
                       prevTasks.map((task) =>
@@ -123,10 +132,10 @@ function TaskBoard() {
                     );
                   }
 
-                  if (tasks.delete_task) {
-                    const deleteTask = tasks.delete_task.task; 
+                  if (socketTasks.delete_task) {
+                    const deleteTask = socketTasks.delete_task.taskID; 
                   
-                    setTasks(tasks.filter((task) => item.id !== deleteTask.id));
+                    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== deleteTask));
                   }
               };
   
@@ -224,6 +233,35 @@ function TaskBoard() {
                     JSON.stringify({
                         data: updateData,
                         action: "update",
+                    })
+                );
+
+                setTasks((prevTasks) =>
+                  prevTasks.map((task) =>
+                      task.id === updateData.id ? { ...task, ...updateData } : task
+                  )
+              );
+            } 
+            
+            else {
+                console.warn("WebSocket is not open. Attempting to reconnect...");
+                // Handle reconnection logic here if needed
+            }
+        } catch (error) {
+            console.error("Error sending message:", error);
+        }
+    }
+
+    const handleDelete = (e,deleteData) =>{
+      e.preventDefault();
+      console.log("delete")
+        
+        try {
+            if (socketRef.current.readyState === WebSocket.OPEN) {
+              socketRef.current.send(
+                    JSON.stringify({
+                        data: deleteData,
+                        action: "delete",
                     })
                 );
             } else {
@@ -402,7 +440,7 @@ function TaskBoard() {
             <h1 className='h-10 bg-blue-400 text-white text-xl text-center pt-1' >Pending</h1>
             <div className='overflow-y-auto max-h-[600px] m-5'>
             {pendingTasks.map((task, index) => (
-                <Task TaskID={task.id} TaskName={task.taskName} TaskDescription={task.taskDescription} TaskStatus={"Pending"} DueDate={'05/12/05'} AssignedTo={task.assignedTo} AssignedToAvatar={"null.jpg"} updateFunc={handleUpdate}/>
+                <Task TaskID={task.id} TaskName={task.taskName} TaskDescription={task.taskDescription} TaskStatus={"Pending"} DueDate={'05/12/05'} AssignedTo={task.assignedTo} AssignedToAvatar={"null.jpg"} updateFunc={handleUpdate} deleteFunc={handleDelete}/>
             ))}
               
               
@@ -413,7 +451,7 @@ function TaskBoard() {
             <h1 className='h-10 bg-amber-400 text-white text-xl text-center pt-1'>In Progress</h1>
             <div className='overflow-y-auto max-h-[600px] m-5'>
             {inProgressTasks.map((task, index) => (
-                <Task TaskID={task.id} TaskName={task.taskName} TaskDescription={task.taskDescription} TaskStatus={"In Progress"} DueDate={'05/12/05'} AssignedTo={task.assignedTo} AssignedToAvatar={"null.jpg"} projectID={project.id} updateFunc={handleUpdate}/>
+                <Task TaskID={task.id} TaskName={task.taskName} TaskDescription={task.taskDescription} TaskStatus={"In Progress"} DueDate={'05/12/05'} AssignedTo={task.assignedTo} AssignedToAvatar={"null.jpg"} projectID={project.id} updateFunc={handleUpdate} deleteFunc={handleDelete}/>
             ))}
             </div>
           </div>
@@ -422,7 +460,7 @@ function TaskBoard() {
             <h1 className='h-10 bg-red-400 text-white text-xl text-center pt-1'>On Hold</h1>
             <div className='overflow-y-auto max-h-[600px] m-5'>
             {onHoldTasks.map((task, index) => (
-                <Task TaskID={task.id} TaskName={task.taskName} TaskDescription={task.taskDescription} TaskStatus={"On Hold"} DueDate={'05/12/05'} AssignedTo={task.assignedTo} AssignedToAvatar={"null.jpg"} updateFunc={handleUpdate}/>
+                <Task TaskID={task.id} TaskName={task.taskName} TaskDescription={task.taskDescription} TaskStatus={"On Hold"} DueDate={'05/12/05'} AssignedTo={task.assignedTo} AssignedToAvatar={"null.jpg"} updateFunc={handleUpdate} deleteFunc={handleDelete}/>
             ))}
            
             </div>
@@ -432,7 +470,7 @@ function TaskBoard() {
             <h1 className='h-10 bg-teal-400 text-white text-xl text-center pt-1'>Completed</h1>
             <div className='overflow-y-auto max-h-[600px] m-5'>
             {completedTasks.map((task, index) => (
-                <Task TaskID={task.id} TaskName={task.taskName} TaskDescription={task.taskDescription} TaskStatus={"Completed"} DueDate={'05/12/05'} AssignedTo={task.assignedTo} AssignedToAvatar={"null.jpg"} updateFunc={handleUpdate}/>
+                <Task TaskID={task.id} TaskName={task.taskName} TaskDescription={task.taskDescription} TaskStatus={"Completed"} DueDate={'05/12/05'} AssignedTo={task.assignedTo} AssignedToAvatar={"null.jpg"} updateFunc={handleUpdate} deleteFunc={handleDelete}/>
             ))}
             </div>
           </div>

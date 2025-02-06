@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Box, Dialog, Modal } from '@mui/material'
 
 
-function Task({TaskID,TaskName,TaskDescription,TaskStatus,AssignedTo=[],AssignedToAvatar,DueDate,projectID,updateFunc}) {
+function Task({TaskID,TaskName,TaskDescription,TaskStatus,AssignedTo=[],AssignedToAvatar,DueDate,projectID,updateFunc,deleteFunc}) {
 
   let statusColor = "bg-gray-400"; // Default color
 
@@ -46,6 +46,13 @@ function Task({TaskID,TaskName,TaskDescription,TaskStatus,AssignedTo=[],Assigned
     const handleSubmit = (e) => {
       e.preventDefault();
       updateFunc(e,formData)
+      setTaskClick(false)
+    }
+
+    const handeDelete = (e) => {
+      e.preventDefault();
+      deleteFunc(e,TaskID)
+      setHandleDelete(false)
     }
 
   
@@ -67,7 +74,7 @@ function Task({TaskID,TaskName,TaskDescription,TaskStatus,AssignedTo=[],Assigned
             <Modal open={handleDelete} onClose={()=>{setHandleDelete(false)}} >
               <Box className='absolute top-[50%] left-[50%] bg-slate-200 p-4'>
                 <h1>Delete {TaskName}??</h1>
-                <button className='bg-red-400 p-5 rounded-lg'onClick={()=>{setHandleDelete(false)}}>Delete</button>
+                <button className='bg-red-400 p-5 rounded-lg' onClick={handeDelete}>Delete</button>
               </Box>
           
             </Modal>
