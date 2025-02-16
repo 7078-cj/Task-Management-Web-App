@@ -1,8 +1,8 @@
 import json
 from  channels.generic.websocket import AsyncJsonWebsocketConsumer
 from channels.db import database_sync_to_async,sync_to_async
-from .models import Project,Task,User
-from .serializer import TaskSerializer
+from .models import Project,Task,User,Notification
+from .serializer import TaskSerializer,NotificationSerializer
 from django.forms.models import model_to_dict
 #import models
 
@@ -68,7 +68,7 @@ class TaskConsumer(AsyncJsonWebsocketConsumer):
         response = {
         'task': task
         }
-        print(f'serializer:{task}')
+       
     
    
         await self.send(text_data=json.dumps({"create_task": response}))
@@ -107,7 +107,7 @@ class TaskConsumer(AsyncJsonWebsocketConsumer):
         response = {
         'task': task
         }
-        print(f'serializer:{task}')
+        
     
    
         await self.send(text_data=json.dumps({"update_task": response}))
@@ -132,11 +132,11 @@ class TaskConsumer(AsyncJsonWebsocketConsumer):
         return task_data
     
     async def delete_task(self,event):
-        print(event)
+       
         outer_data = event["data"]
         
         data = outer_data["data"]
-        print(data)
+        
         
         
         taskID = await self.delete_taskdb(data=data)
@@ -172,5 +172,55 @@ class TaskConsumer(AsyncJsonWebsocketConsumer):
     
     async def disconnect(self, code):
         await self.channel_layer.group_discard(self.project_name,self.channel_name)
+        
+        self.close(code)
+
+
+@database_sync_to_async
+def get_user_by_id(user_id):
+    try:
+        return User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return None
+
+
+@database_sync_to_async
+def get_notifications(user):
+    notifications = Notification.objects.filter(user=user).order_by('-created', '-update')
+    return NotificationSerializer(notifications, many=True).data
+      
+class NotifConsumer(AsyncJsonWebsocketConsumer):
+    async def connect(self):
+        
+        self.user_id = self.scope['url_route']['kwargs']['user_id']
+        
+        
+        await self.channel_layer.group_add("notifications",self.channel_name)
+        
+        await self.accept()
+    
+    
+
+    async def send_notification(self, event):
+        if int(self.user_id) in event["assignedTo"]:
+           
+            user = await get_user_by_id(self.user_id)
+            if not user:
+                return  
+            notifications = await get_notifications(user)
+            response = {'notifs': notifications} 
+            print(response)
+
+            await self.send(text_data=json.dumps(response))
+
+    
+    
+                
+            
+            
+    
+        
+    async def disconnect(self, code):
+        await self.channel_layer.group_discard("notifications",self.channel_name)
         
         self.close(code)

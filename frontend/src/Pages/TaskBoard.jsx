@@ -440,7 +440,15 @@ function TaskBoard() {
             <h1 className='h-10 bg-blue-400 text-white text-xl text-center pt-1' >Pending</h1>
             <div className='overflow-y-auto max-h-[600px] m-5'>
             {pendingTasks.map((task, index) => (
-                <Task TaskID={task.id} TaskName={task.taskName} TaskDescription={task.taskDescription} TaskStatus={"Pending"} DueDate={'05/12/05'} AssignedTo={task.assignedTo} AssignedToAvatar={"null.jpg"} updateFunc={handleUpdate} deleteFunc={handleDelete}/>
+                <Task TaskID={task.id} 
+                      TaskName={task.taskName} 
+                      TaskDescription={task.taskDescription} 
+                      TaskStatus={"Pending"} 
+                      DueDate={'05/12/05'} 
+                      AssignedTo={task.assignedTo} 
+                      AssignedToAvatar={"null.jpg"} 
+                      updateFunc={handleUpdate} 
+                      deleteFunc={handleDelete}/>
             ))}
               
               
@@ -451,7 +459,14 @@ function TaskBoard() {
             <h1 className='h-10 bg-amber-400 text-white text-xl text-center pt-1'>In Progress</h1>
             <div className='overflow-y-auto max-h-[600px] m-5'>
             {inProgressTasks.map((task, index) => (
-                <Task TaskID={task.id} TaskName={task.taskName} TaskDescription={task.taskDescription} TaskStatus={"In Progress"} DueDate={'05/12/05'} AssignedTo={task.assignedTo} AssignedToAvatar={"null.jpg"} projectID={project.id} updateFunc={handleUpdate} deleteFunc={handleDelete}/>
+                <Task TaskID={task.id} 
+                      TaskName={task.taskName} 
+                      TaskDescription={task.taskDescription} 
+                      TaskStatus={"In Progress"} DueDate={'05/12/05'} 
+                      AssignedTo={task.assignedTo} AssignedToAvatar={"null.jpg"} 
+                      projectID={project.id} 
+                      updateFunc={handleUpdate} 
+                      deleteFunc={handleDelete}/>
             ))}
             </div>
           </div>
@@ -460,7 +475,15 @@ function TaskBoard() {
             <h1 className='h-10 bg-red-400 text-white text-xl text-center pt-1'>On Hold</h1>
             <div className='overflow-y-auto max-h-[600px] m-5'>
             {onHoldTasks.map((task, index) => (
-                <Task TaskID={task.id} TaskName={task.taskName} TaskDescription={task.taskDescription} TaskStatus={"On Hold"} DueDate={'05/12/05'} AssignedTo={task.assignedTo} AssignedToAvatar={"null.jpg"} updateFunc={handleUpdate} deleteFunc={handleDelete}/>
+                <Task TaskID={task.id} 
+                      TaskName={task.taskName} 
+                      TaskDescription={task.taskDescription} 
+                      TaskStatus={"On Hold"} 
+                      DueDate={'05/12/05'} 
+                      AssignedTo={task.assignedTo} 
+                      AssignedToAvatar={"null.jpg"} 
+                      updateFunc={handleUpdate} 
+                      deleteFunc={handleDelete}/>
             ))}
            
             </div>
@@ -470,7 +493,15 @@ function TaskBoard() {
             <h1 className='h-10 bg-teal-400 text-white text-xl text-center pt-1'>Completed</h1>
             <div className='overflow-y-auto max-h-[600px] m-5'>
             {completedTasks.map((task, index) => (
-                <Task TaskID={task.id} TaskName={task.taskName} TaskDescription={task.taskDescription} TaskStatus={"Completed"} DueDate={'05/12/05'} AssignedTo={task.assignedTo} AssignedToAvatar={"null.jpg"} updateFunc={handleUpdate} deleteFunc={handleDelete}/>
+                <Task TaskID={task.id} 
+                      TaskName={task.taskName} 
+                      TaskDescription={task.taskDescription} 
+                      TaskStatus={"Completed"} 
+                      DueDate={'05/12/05'} 
+                      AssignedTo={task.assignedTo} 
+                      AssignedToAvatar={"null.jpg"} 
+                      updateFunc={handleUpdate} 
+                      deleteFunc={handleDelete}/>
             ))}
             </div>
           </div>

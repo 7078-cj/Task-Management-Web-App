@@ -54,7 +54,7 @@ function Task({TaskID,TaskName,TaskDescription,TaskStatus,AssignedTo=[],Assigned
       deleteFunc(e,TaskID)
       setHandleDelete(false)
     }
-
+      
   
   return (
     <div className="bg-white rounded-lg p-4 shadow m-3">
@@ -72,10 +72,21 @@ function Task({TaskID,TaskName,TaskDescription,TaskStatus,AssignedTo=[],Assigned
             <box-icon name='message-square-x' onClick={()=>{setHandleDelete(true)}} ></box-icon>
 
             <Modal open={handleDelete} onClose={()=>{setHandleDelete(false)}} >
-              <Box className='absolute top-[50%] left-[50%] bg-slate-200 p-4'>
-                <h1>Delete {TaskName}??</h1>
-                <button className='bg-red-400 p-5 rounded-lg' onClick={handeDelete}>Delete</button>
+              <Box className="absolute top-[50%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 bg-white shadow-lg rounded-lg p-6 w-80 text-center">
+                <h1 className="text-lg font-semibold text-gray-800">Delete <span className="text-red-500">{TaskName}</span>?</h1>
+                
+                <div className="flex justify-center gap-4 mt-4">
+                  <button 
+                    className="bg-red-500 text-white px-6 py-3 rounded-lg shadow-md hover:bg-red-600 transition-all"
+                    onClick={handeDelete}
+                  >
+                    Delete
+                  </button>
+                  
+                  
+                </div>
               </Box>
+
           
             </Modal>
           </div>
@@ -130,10 +141,8 @@ function Task({TaskID,TaskName,TaskDescription,TaskStatus,AssignedTo=[],Assigned
 
       <div className="flex items-center mb-4">
         <span className={`${statusColor} text-white px-2 py-1 rounded-full mr-2`}>{TaskStatus}</span>
-        <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-          <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
-        </svg>
-        <span className="text-gray-600">{DueDate}</span>
+        
+        
       </div>
 
       

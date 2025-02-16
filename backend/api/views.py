@@ -9,7 +9,7 @@ from rest_framework.decorators import permission_classes
 from rest_framework.permissions import AllowAny
 from django.shortcuts import get_object_or_404
 
-from .serializer import UserSerializer,TaskSerializer,ProjectSerializer,ProfileSerializer
+from .serializer import UserSerializer,TaskSerializer,ProjectSerializer,ProfileSerializer,NotificationSerializer
 
 from .models import Project, Task,UserProfile
 from django.contrib.auth.models import User
@@ -111,7 +111,7 @@ class UserProjectsView(ListCreateAPIView):
             user = User.objects.get(id=user_id)
         except User.DoesNotExist:
             return Project.objects.none()  
-        return user.manager.all()  
+        return user.manager.all().order_by('-created', '-update')  
 
     def perform_create(self, serializer):
         print(f"Request data: {self.request.data}") 
@@ -151,6 +151,36 @@ def AllUser(request):
     
     
     return Response(serializer.data)
+
+@api_view(['GET'])        
+def UserProjectsAssigned(request,pk):
+    user = User.objects.get(id=pk)
+    user_projects = Project.objects.filter(projectTask__assignedTo=user).distinct().order_by('-created', '-update')
+    serializer = ProjectSerializer(user_projects,many=True)
+    
+    
+    return Response(serializer.data)
+
+@api_view(['GET'])        
+def UserTasksAssigned(request,pk):
+    user = User.objects.get(id=pk)
+    tasks = user.tasks.all().order_by('-created', '-update')
+    serializer = TaskSerializer(tasks,many=True)
+    
+    
+    return Response(serializer.data)
+
+@api_view(['GET'])        
+def UserNotifications(request,pk):
+    user = User.objects.get(id=pk)
+    notifs = user.notif.all().order_by('-created', '-update')
+    serializer = NotificationSerializer(notifs,many=True)
+    
+    
+    return Response(serializer.data)
+
+
+
     
     
 

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Project, Task, UserProfile
+from .models import Project, Task, UserProfile, Notification
 
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -42,3 +42,10 @@ class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = ['id','projectName', 'projectManager', 'projectTask', 'total_tasks', 'completed_tasks']
+
+class NotificationSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    project = ProjectSerializer(read_only=True)
+    class Meta:
+        model = Notification
+        fields = "__all__"

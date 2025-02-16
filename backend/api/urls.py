@@ -13,6 +13,9 @@ urlpatterns = [
     path('registerUser/',views.registerUser),
     path('users/<str:pk>/projects/', UserProjectsView.as_view(), name='user-projects'),
     path('projects/<str:pk>/', ProjectDetailView.as_view(), name='project-detail'),
-    path('all/user',views.AllUser)
+    path('all/user',views.AllUser),
+    path('projectsassigned/<str:pk>/',views.UserProjectsAssigned),
+    path('tasksassigned/<str:pk>/',views.UserTasksAssigned),
+    path('notifications/<str:pk>/',views.UserNotifications),
     
 ]

@@ -9,6 +9,7 @@ import RegisterPage from './Pages/RegisterPage'
 import Home from './Pages/Home'
 import PrivateRoutes from './Context/PrivateRoutes'
 import TaskBoard from './Pages/TaskBoard'
+import ProjectsAssigned from './Pages/ProjectsAssigned'
 
 
 function App() {
@@ -29,6 +30,11 @@ function App() {
               <Route path='/taskboard/:id' element={
               <PrivateRoutes>
                 <TaskBoard/>
+              </PrivateRoutes>}/>
+
+              <Route path='/projectsassigned' element={
+              <PrivateRoutes>
+                <ProjectsAssigned/>
               </PrivateRoutes>}/>
               
 
