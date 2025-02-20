@@ -7,6 +7,7 @@ function Navbar() {
     var [handleProfileClick,setHandleProfileClick] = useState(false)
     var [handleNotifClick,setHandleNotifClick] = useState(false)
     const [notifs,setNotifs] = useState([])
+    const [newNotifs,setNewNotifs] = useState(false)
     const {user,authTok} = useContext(AuthContext)
     
     const prof = useRef()
@@ -24,6 +25,7 @@ function Navbar() {
           const handleClickOutsidenotif = (event) => {
             if (notif.current && !notif.current.contains(event.target)) {
                 setHandleNotifClick(false);
+                setNewNotifs(false);
             }
           };
 
@@ -55,6 +57,7 @@ function Navbar() {
           setNotifs(result);
           
           
+          
         }
         catch(err){
           console.log(err.message)
@@ -77,6 +80,7 @@ function Navbar() {
                       const Notifs = JSON.parse(event.data);
                       console.log(Notifs.notifs)
                       setNotifs(Notifs.notifs)
+                      setNewNotifs(true);
 
                   }
                 }
@@ -87,6 +91,14 @@ function Navbar() {
                     socketRef.current.close();
                   }
           }, []);
+        
+    const notifClick = () =>{
+        setHandleNotifClick(!handleNotifClick)
+        if (newNotifs == true){
+            setNewNotifs(false)
+        }
+        
+    }
 
     
   return (
@@ -98,9 +110,13 @@ function Navbar() {
             {/* Notification Bell Icon */}
             <div
                 className="rounded-full p-5 bg-slate-300 cursor-pointer"
-                onClick={() => setHandleNotifClick(!handleNotifClick)}
+                onClick={notifClick}
             >
-                <box-icon name="bell"></box-icon>
+                 <box-icon 
+                    name="bell" 
+                    type={newNotifs ? 'solid' : 'regular'} 
+                    color={newNotifs ? '#0000FF' : 'black'}
+                ></box-icon>
             </div>
 
             {/* Notification Popup */}

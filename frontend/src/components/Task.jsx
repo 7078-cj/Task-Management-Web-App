@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Box, Dialog, Modal } from '@mui/material'
 
 
-function Task({TaskID,TaskName,TaskDescription,TaskStatus,AssignedTo=[],AssignedToAvatar,DueDate,projectID,updateFunc,deleteFunc}) {
+function Task({TaskID,TaskName,TaskDescription,TaskStatus,AssignedTo=[],AssignedToAvatar,DueDate,projectID,updateFunc,deleteFunc,ProjectManager}) {
 
   let statusColor = "bg-gray-400"; // Default color
 

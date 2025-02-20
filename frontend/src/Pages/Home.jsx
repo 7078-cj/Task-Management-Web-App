@@ -10,10 +10,9 @@ function Home() {
     <>
       <Navbar/>
 
-      <div className='grid grid-cols-[20%_60%_20%]'>
+      <div className='grid grid-cols-[20%_60%]'>
         <SideBar/>
         <DashBoard/>
-        <TaskAssigned/>
       </div>
       
     </>

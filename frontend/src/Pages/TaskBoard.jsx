@@ -188,7 +188,7 @@ function TaskBoard() {
       useEffect(() => {
         setFormData((prev) => ({
             ...prev,
-            assignedTo: selectedUsers, // Assign the array directly
+            assignedTo: selectedUsers, 
         }));
     }, [selectedUsers]);
 
@@ -321,6 +321,7 @@ function TaskBoard() {
             <div className='bg-slate-200 min-h-screen grid grid-rows-[20%_80%] rounded-lg'>
         <div className='bg-white w-[95%] m-2 ml-11 flex flex-col gap-5 justify-center items-center'>
             <h1>{project ? project.projectName:"loading..."}</h1>
+            <h1>{project ? `Project Manager: ${project.projectManager.username}`:"loading..."}</h1>
             <div>
             <div className='flex items-center gap-4'>
               <div className='w-[900px] h-5 bg-slate-400 rounded-lg'>
@@ -448,7 +449,8 @@ function TaskBoard() {
                       AssignedTo={task.assignedTo} 
                       AssignedToAvatar={"null.jpg"} 
                       updateFunc={handleUpdate} 
-                      deleteFunc={handleDelete}/>
+                      deleteFunc={handleDelete}
+                      ProjectManager={project.projectManager.username}/>
             ))}
               
               
@@ -466,7 +468,8 @@ function TaskBoard() {
                       AssignedTo={task.assignedTo} AssignedToAvatar={"null.jpg"} 
                       projectID={project.id} 
                       updateFunc={handleUpdate} 
-                      deleteFunc={handleDelete}/>
+                      deleteFunc={handleDelete}
+                      ProjectManager={project.projectManager.username}/>
             ))}
             </div>
           </div>
@@ -483,7 +486,8 @@ function TaskBoard() {
                       AssignedTo={task.assignedTo} 
                       AssignedToAvatar={"null.jpg"} 
                       updateFunc={handleUpdate} 
-                      deleteFunc={handleDelete}/>
+                      deleteFunc={handleDelete}
+                      ProjectManager={project.projectManager.username}/>
             ))}
            
             </div>
@@ -501,7 +505,8 @@ function TaskBoard() {
                       AssignedTo={task.assignedTo} 
                       AssignedToAvatar={"null.jpg"} 
                       updateFunc={handleUpdate} 
-                      deleteFunc={handleDelete}/>
+                      deleteFunc={handleDelete}
+                      ProjectManager={project.projectManager.username}/>
             ))}
             </div>
           </div>
