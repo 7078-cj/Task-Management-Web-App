@@ -1,9 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 
 import { Box, Dialog, Modal } from '@mui/material'
+import AuthContext from '../Context/AuthContext';
 
 
 function Task({TaskID,TaskName,TaskDescription,TaskStatus,AssignedTo=[],AssignedToAvatar,DueDate,projectID,updateFunc,deleteFunc,ProjectManager}) {
+
+  const {user} = useContext(AuthContext)
 
   let statusColor = "bg-gray-400"; // Default color
 
@@ -54,7 +57,8 @@ function Task({TaskID,TaskName,TaskDescription,TaskStatus,AssignedTo=[],Assigned
       deleteFunc(e,TaskID)
       setHandleDelete(false)
     }
-      
+    
+    
   
   return (
     <div className="bg-white rounded-lg p-4 shadow m-3">
@@ -65,12 +69,14 @@ function Task({TaskID,TaskName,TaskDescription,TaskStatus,AssignedTo=[],Assigned
         </div>
         
         <div className='flex flex-row gap-2'>
-            <div className="text-gray-500" ref={taskMenu} onClick={()=>{setTaskClick(true)}}><div>...</div>
+           {AssignedTo.some(assignedUser => assignedUser.username === user.username)||ProjectManager == user.username ? <div className="text-gray-500" ref={taskMenu} onClick={()=>{setTaskClick(true)}}><div>...</div></div>:<></>}
             
-            </div>
             
-            <box-icon name='message-square-x' onClick={()=>{setHandleDelete(true)}} ></box-icon>
+            
+            
 
+            {ProjectManager == user.username ?<>
+            <box-icon name='message-square-x' onClick={()=>{setHandleDelete(true)}} ></box-icon>
             <Modal open={handleDelete} onClose={()=>{setHandleDelete(false)}} >
               <Box className="absolute top-[50%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 bg-white shadow-lg rounded-lg p-6 w-80 text-center">
                 <h1 className="text-lg font-semibold text-gray-800">Delete <span className="text-red-500">{TaskName}</span>?</h1>
@@ -88,7 +94,7 @@ function Task({TaskID,TaskName,TaskDescription,TaskStatus,AssignedTo=[],Assigned
               </Box>
 
           
-            </Modal>
+            </Modal></>:<></>}
           </div>
           <Dialog
             open={taskClick}
