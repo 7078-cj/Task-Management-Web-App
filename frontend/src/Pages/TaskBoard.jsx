@@ -330,8 +330,8 @@ function TaskBoard() {
             <h1 className=' '>{progress}%</h1>
             </div>
            
-
-            <div ref={add} className=''>
+            
+            {project?.projectManager.username == user.username ? <div ref={add} className=''>
               <button className="overflow-hidden rounded-lg relative w-36 h-10 cursor-pointer flex items-center border border-green-500 bg-green-500 group hover:bg-green-500 active:bg-green-500 active:border-green-500"
               onClick={()=>{
                 setHandleAdd(!handleAdd)
@@ -343,7 +343,7 @@ function TaskBoard() {
                   <line x1={5} x2={19} y1={12} y2={12} />
                 </svg>
               </span>
-            </button>
+              </button>
 
                         {handleAdd ? (<form onSubmit={handleSend} className="bg-white shadow rounded-lg p-4 m-5 absolute flex flex-col gap-2">
                 <h3 className="text-xl font-semibold">
@@ -428,7 +428,7 @@ function TaskBoard() {
                     </button>
                 </div>
             </form>):<></>}
-            </div>
+            </div>:<></>}
 
 
            
