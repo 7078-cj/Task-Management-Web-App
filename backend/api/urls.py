@@ -17,5 +17,7 @@ urlpatterns = [
     path('projectsassigned/<str:pk>/',views.UserProjectsAssigned),
     path('tasksassigned/<str:pk>/',views.UserTasksAssigned),
     path('notifications/<str:pk>/',views.UserNotifications),
+    path('updateProfile/<str:pk>/',views.updateProfile),
+    path('getProfile/<str:pk>/',views.userProfile),
     
 ]

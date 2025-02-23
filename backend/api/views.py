@@ -48,18 +48,26 @@ def registerUser(request):
         return Response(serializer.errors, status=400)
 
 @api_view(['GET'])
-def getUserProfile(request):
-    profile = User.profile.get()
-    serializer = ProfileSerializer(profile,many=False)
+def userProfile(request,pk):
+    user = User.objects.get(id=pk)
+    serializer = UserSerializer(user,many=False)
     return Response(serializer.data)
 
-@api_view(['POST'])
-def createProfile(request):
-    serializer = ProfileSerializer(data=request.data)
+@api_view(['PUT'])
+def updateProfile(request,pk):
+    user = User.objects.get(id=pk)
+    data = request.data.copy()  
+    if  data.get("profilePic") == "undefined":
+        data.pop("profilePic")
     
+
+    serializer = ProfileSerializer(instance=user.profile, data=data, partial=True)
+
     if serializer.is_valid():
-        serializer.save
-        return Response('profile created')
+        if user.profile.profilePic and data.get("profilePic") != "undefined":
+            user.profile.profilePic.delete(save=False)
+        serializer.save()
+        return Response(serializer.data)
     
     else:
         return Response(serializer.errors)

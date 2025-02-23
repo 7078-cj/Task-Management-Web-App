@@ -6,9 +6,16 @@ function Navbar() {
 
     var [handleProfileClick,setHandleProfileClick] = useState(false)
     var [handleNotifClick,setHandleNotifClick] = useState(false)
+    const [isEditing, setIsEditing] = useState(false);
+
+    const [editProfile, setEditProfile] = useState();
+
+    
+
     const [notifs,setNotifs] = useState([])
     const [newNotifs,setNewNotifs] = useState(false)
     const {user,authTok} = useContext(AuthContext)
+    const [profile,setProfile] = useState()
     
     const prof = useRef()
     const notif = useRef()
@@ -40,8 +47,7 @@ function Navbar() {
 
     },[])
 
-    console.log(handleProfileClick)
-
+   
     var getData = async() =>{
         try{
           var response = await fetch(`http://127.0.0.1:8000/api/notifications/${user.user_id}/`,{
@@ -64,10 +70,34 @@ function Navbar() {
         }
       }
 
+      var getProfile = async() =>{
+        try{
+          var response = await fetch(`http://127.0.0.1:8000/api/getProfile/${user.user_id}/`,{
+            method: "GET",
+            headers: {
+              'Content-Type' : 'application/json',
+              'Authorization': 'Bearer ' + String(authTok.access),
+            }
+          })
+    
+          var result = await response.json();
+          console.log(result)
+          setProfile(result);
+          setEditProfile(result)
+          
+          
+          
+        }
+        catch(err){
+          console.log(err.message)
+        }
+      }
+
 
 
     useEffect(() => {
         getData();
+        getProfile();
               if (user) {
     
                 socketRef.current = new WebSocket(`ws://127.0.0.1:8000/ws/notification/${user.user_id}`);
@@ -101,6 +131,40 @@ function Navbar() {
     }
 
     
+
+    const handleSave = async(e) => {
+           
+            const formData = new FormData();
+            formData.append("bio", e.target.bio.value);
+            formData.append("profilePic", e.target.profilePic.files[0])
+            
+        
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/api/updateProfile/5/`, {
+                    method: "PUT",
+                    headers: {
+                        "Accept": "application/json",
+                        'Authorization': 'Bearer ' + String(authTok.access),
+                       
+                    },
+                    body: formData,
+                });
+        
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+        
+                const data = await response.json();
+                console.log("Profile updated:", data);
+                setProfile(data);
+                setIsEditing(false);
+            } catch (error) {
+                console.error("Error updating profile:", error);
+            }
+        };
+    
+
+    
   return (
     <div  className='flex items-center justify-around p-5'>
         <h1>7078</h1>
@@ -109,7 +173,7 @@ function Navbar() {
         <div className="relative" ref={notif}>
             {/* Notification Bell Icon */}
             <div
-                className="rounded-full p-5 bg-slate-300 cursor-pointer"
+                className="rounded-full h-[40px] w-[40px] flex justify-center items-center bg-slate-300 cursor-pointer"
                 onClick={notifClick}
             >
                  <box-icon 
@@ -144,23 +208,70 @@ function Navbar() {
             
             
             <div className='flex items-center gap-3' >
-                <img src="https://i.pinimg.com/736x/bd/b7/95/bdb795aabdeeea18824f8ab188b68b0b.jpg" 
-                    alt="" className='rounded-full w-20 h-20'  />
+                <img src={profile?.profile?.profilePic 
+                            ? `http://127.0.0.1:8000${profile.profile.profilePic}`
+                            : "https://via.placeholder.com/100"} 
+                    alt="Profile"
+                    className='rounded-full w-20 h-20'  />
                 <div ref={prof}>
                     <h1 onClick={
                         () => {
                             setHandleProfileClick(!handleProfileClick)
                         }
-                    }>Username</h1>
+                    }>{profile?.username}</h1>
 
-{
-                    handleProfileClick ? (
-                        <div>
-                            profile
-                        </div>
-                    ):
-                    <></>
-                }
+
+                    {handleProfileClick && (
+                        <div className="absolute bg-white shadow-md p-4 rounded-md mt-2 z-50">
+                            {isEditing ? (
+                                <form className='' onSubmit={handleSave} encType="multipart/form-data">
+                                    ProfilePic: 
+                                    <input
+                                        type="file"
+                                        className="border p-1 rounded w-full mb-2"
+                                        value={editProfile.profilePic}
+                                        name='profilePic'
+                                        onChange={(e) =>
+                                            setEditProfile({ ...editProfile, profilePic: e.target.value })
+                                        }
+                                    />
+                                    <textarea
+                                        className="border p-1 rounded w-full mb-2"
+                                        value={profile?.profile?.bio}
+                                        name='bio'
+                                        onChange={(e) =>
+                                            setEditProfile({ ...editProfile, bio: e.target.value })
+                                        }
+                                    ></textarea>
+                                    <button
+                                        className="bg-green-500 text-white px-3 py-1 rounded mr-2"
+                                       
+                                    >
+                                        Save
+                                    </button>
+                                    <button
+                                        className="bg-gray-300 px-3 py-1 rounded"
+                                        onClick={() => setIsEditing(false)}
+                                    >
+                                        Cancel
+                                    </button>
+                                </form>
+                            ):(
+                                <div>
+
+                                    <p><strong>Bio:</strong> <p>{profile?.profile?.bio ?? "No bio available"}</p></p>
+                                    <button
+                                        className="bg-blue-500 text-white px-3 py-1 rounded mt-2"
+                                        onClick={() => setIsEditing(true)}
+                                    >
+                                        Edit
+                                    </button>
+                                </div>
+                            )}
+                               </div>
+                    )}
+                  
+                
                 </div>
 
                 

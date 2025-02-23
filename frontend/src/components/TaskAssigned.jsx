@@ -60,9 +60,9 @@ function TaskAssigned() {
             <span
               className={`px-3 py-1 text-sm font-semibold rounded-full ${
                 task.taskStatus === "P"
-                  ? "bg-yellow-200 text-yellow-800"
-                  : task.taskStatus === "IP"
                   ? "bg-blue-200 text-blue-800"
+                  : task.taskStatus === "IP"
+                  ? "bg-yellow-200 text-yellow-800"
                   : "bg-red-200 text-red-800"
               }`}
             >
