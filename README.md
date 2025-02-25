@@ -3,6 +3,12 @@
 
 
 ---
+![image](https://github.com/user-attachments/assets/8c7fff0b-2ce4-4351-986e-682b28b04a67)
+![image](https://github.com/user-attachments/assets/7779a7c9-0640-453f-9d9f-3c0498525ccc)
+![image](https://github.com/user-attachments/assets/9d8cd3c5-81ac-4c5c-9537-9a6aee610038)
+
+
+
 
 ## **Overview**  
 The **Task Management Web App** is a Django-based application designed to help users efficiently manage tasks, and track progress. It includes **a frontend and a backend** for seamless user interaction.  
