@@ -19,5 +19,6 @@ urlpatterns = [
     path('notifications/<str:pk>/',views.UserNotifications),
     path('updateProfile/<str:pk>/',views.updateProfile),
     path('getProfile/<str:pk>/',views.userProfile),
+    path('deleteNotification/<str:pk>/',views.deleteNotification),
     
 ]

@@ -140,7 +140,7 @@ function Navbar() {
             
         
             try {
-                const response = await fetch(`http://127.0.0.1:8000/api/updateProfile/5/`, {
+                const response = await fetch(`http://127.0.0.1:8000/api/updateProfile/${user.user_id}/`, {
                     method: "PUT",
                     headers: {
                         "Accept": "application/json",
@@ -162,6 +162,29 @@ function Navbar() {
                 console.error("Error updating profile:", error);
             }
         };
+
+    const handleNotiifDelete = async(notifID) =>{
+            
+        const response = await fetch(`http://127.0.0.1:8000/api/deleteNotification/${notifID}/`, {
+            method: "DELETE",
+            headers: {
+                "Accept": "application/json",
+                'Authorization': 'Bearer ' + String(authTok.access),
+               
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log("Notif Deleted:", data);
+        
+
+        setNotifs((prevNotifs) => prevNotifs.filter((notif) => notif.id !== notifID));
+          
+    }
     
 
     
@@ -191,12 +214,16 @@ function Navbar() {
                     {notifs.length > 0 ? (
                         <ul>
                             {notifs.map((notif, index) => (
-                                <a href={`/taskboard/${notif.project.id}`}>
-                                <li key={index} className="p-2 border-b last:border-none hover:bg-gray-100">
-                                    {notif.message}
-                                    
-                                </li>
-                                </a>
+                                <div className='flex flex-row gap-5'>
+                                    <a href={`/taskboard/${notif.project.id}`}>
+                                        <li key={index} className="p-2 border-b last:border-none hover:bg-gray-100">
+                                            {notif.message}
+                                            
+                                        </li>
+                                
+                                    </a>
+                                    <button onClick={() => handleNotiifDelete(notif.id)}>X</button>
+                                </div>
                             ))}
                         </ul>
                     ) : (

@@ -164,12 +164,6 @@ class TaskConsumer(AsyncJsonWebsocketConsumer):
         
         return data
     
-        
-           
-        
-        
-        
-    
     async def disconnect(self, code):
         await self.channel_layer.group_discard(self.project_name,self.channel_name)
         

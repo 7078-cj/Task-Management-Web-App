@@ -11,7 +11,7 @@ from django.shortcuts import get_object_or_404
 
 from .serializer import UserSerializer,TaskSerializer,ProjectSerializer,ProfileSerializer,NotificationSerializer
 
-from .models import Project, Task,UserProfile
+from .models import Project, Task,UserProfile, Notification
 from django.contrib.auth.models import User
 
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
@@ -102,12 +102,12 @@ def updateProfile(request,pk):
 #     else:
 #         return Response(serializer.errors)
 
-# @api_view(['DELETE'])
-# def deleteProject(request,pk):
-#     project = Project.objects.get(id=pk)
-#     project.delete()
+@api_view(['DELETE'])
+def deleteNotification(request,pk):
+    notification = Notification.objects.get(id=pk)
+    notification.delete()
     
-#     return Response("project deleted")
+    return Response("notification deleted")
 
 class UserProjectsView(ListCreateAPIView):
     serializer_class = ProjectSerializer
