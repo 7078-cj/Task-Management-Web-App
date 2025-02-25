@@ -22,6 +22,7 @@ The **Task Management Web App** is a Django-based application designed to help u
 ✔️ Task status tracking (Pending, In Progress, Completed)  
 ✔️ User-friendly **frontend UI**  
 ✔️ API endpoints for task management
+✔️ RealTIme updates using websockets(Django Channels)
 
 ---
 
