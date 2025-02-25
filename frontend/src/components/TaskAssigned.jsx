@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import AuthContext from '../Context/AuthContext';
 import { Link } from 'react-router-dom';
-import { Accordion } from '@mantine/core';
+import { Accordion, Badge } from '@mantine/core';
 
 function TaskAssigned() {
 
@@ -36,13 +36,13 @@ function TaskAssigned() {
   },[])
   const items = tasks?.map((item) => (
     <Accordion.Item key={item.value} value={item.taskName} >
-      <Accordion.Control icon={item.emoji} ><h1 className={`px-3 py-1 text-sm font-semibold rounded-full ${
+      <Accordion.Control icon={item.emoji} ><div className='flex flex-row justify-evenly'><h1>{item.taskName}</h1><Badge color={`${
                 item.taskStatus === "P"
-                  ? "bg-blue-200 text-blue-800"
+                  ? "blue"
                   : item.taskStatus === "IP"
-                  ? "bg-yellow-200 text-yellow-800"
-                  : "bg-red-200 text-red-800"
-              }`}>{item.taskName}</h1></Accordion.Control>
+                  ? "yellow"
+                  : "red"
+              }`}>{item.taskStatus}</Badge></div></Accordion.Control>
       <Accordion.Panel>Description: {item.taskDescription}</Accordion.Panel>
       <Accordion.Panel>Status:  <span
               className={`px-3 py-1 text-sm font-semibold rounded-full ${

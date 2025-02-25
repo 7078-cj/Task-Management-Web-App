@@ -79,7 +79,7 @@ export function AuthProvider({children}) {
         }, 600000); // Refresh token every 10 minutes
 
         return () => clearInterval(interval);
-    }, [authTokens]);
+    }, []);
 
     const logoutUser = () => {
         setUser(null);
