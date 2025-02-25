@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import AuthContext from '../Context/AuthContext';
 import { Link } from 'react-router-dom';
+import { Accordion } from '@mantine/core';
 
 function TaskAssigned() {
 
@@ -33,6 +34,33 @@ function TaskAssigned() {
   useEffect(()=>{
     getData()
   },[])
+  const items = tasks?.map((item) => (
+    <Accordion.Item key={item.value} value={item.taskName} >
+      <Accordion.Control icon={item.emoji} ><h1 className={`px-3 py-1 text-sm font-semibold rounded-full ${
+                item.taskStatus === "P"
+                  ? "bg-blue-200 text-blue-800"
+                  : item.taskStatus === "IP"
+                  ? "bg-yellow-200 text-yellow-800"
+                  : "bg-red-200 text-red-800"
+              }`}>{item.taskName}</h1></Accordion.Control>
+      <Accordion.Panel>Description: {item.taskDescription}</Accordion.Panel>
+      <Accordion.Panel>Status:  <span
+              className={`px-3 py-1 text-sm font-semibold rounded-full ${
+                item.taskStatus === "P"
+                  ? "bg-blue-200 text-blue-800"
+                  : item.taskStatus === "IP"
+                  ? "bg-yellow-200 text-yellow-800"
+                  : "bg-red-200 text-red-800"
+              }`}
+            >
+              {item.taskStatus === "P"
+                ? "Pending"
+                : item.taskStatus === "IP"
+                ? "In Progress"
+                : "On Hold"}
+            </span></Accordion.Panel>
+    </Accordion.Item>
+  ));
 
   return (
     <div className="p-6 bg-gray-100 rounded-lg shadow-md">
@@ -41,40 +69,9 @@ function TaskAssigned() {
         📝 Task Assigned
       </h2>
 
-      {/* Task List */}
-      <ul className="space-y-3">
-        {tasks?.map((task) => (
-          <li
-            key={task.id}
-            className="p-4 border border-gray-300 rounded-lg bg-white shadow-sm flex justify-between items-center transition-transform transform hover:scale-[1.02]"
-          >
-            {/* Task Link */}
-            <Link
-              to={`/taskboard/${task.project}`}
-              className="font-semibold text-blue-600 hover:underline"
-            >
-              {task.taskName}
-            </Link>
-
-            {/* Status Badge */}
-            <span
-              className={`px-3 py-1 text-sm font-semibold rounded-full ${
-                task.taskStatus === "P"
-                  ? "bg-blue-200 text-blue-800"
-                  : task.taskStatus === "IP"
-                  ? "bg-yellow-200 text-yellow-800"
-                  : "bg-red-200 text-red-800"
-              }`}
-            >
-              {task.taskStatus === "P"
-                ? "Pending"
-                : task.taskStatus === "IP"
-                ? "In Progress"
-                : "On Hold"}
-            </span>
-          </li>
-        ))}
-      </ul>
+      <Accordion defaultValue="Apples">
+        {items}
+      </Accordion>
     </div>
 
   )

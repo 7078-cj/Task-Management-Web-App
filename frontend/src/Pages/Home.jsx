@@ -4,16 +4,18 @@ import SideBar from '../components/SideBar'
 
 import DashBoard from '../components/DashBoard'
 import TaskAssigned from '../components/TaskAssigned'
+import { Button } from '@mantine/core'
 
 function Home() {
   return (
     <>
       <Navbar/>
 
-      <div className='grid grid-cols-[20%_80%]'>
+      <div className='grid grid-cols-[10%_90%]'>
         <SideBar/>
         <DashBoard/>
       </div>
+      
       
     </>
   )

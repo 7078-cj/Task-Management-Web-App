@@ -2,12 +2,13 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 
 import { Box, Dialog, Modal } from '@mui/material'
 import AuthContext from '../Context/AuthContext';
+import { Avatar } from '@mantine/core';
 
 
 function Task({TaskID,TaskName,TaskDescription,TaskStatus,AssignedTo=[],AssignedToAvatar,DueDate,projectID,updateFunc,deleteFunc,ProjectManager}) {
 
   const {user} = useContext(AuthContext)
-
+ 
   let statusColor = "bg-gray-400"; // Default color
 
   switch (TaskStatus) {
@@ -163,6 +164,10 @@ function Task({TaskID,TaskName,TaskDescription,TaskStatus,AssignedTo=[],Assigned
               Assigned to: {Array.isArray(AssignedTo) && AssignedTo.length > 0 ? (
                   AssignedTo.map((user, index) => (
                       <span key={index}>
+                          <Avatar src={user.profile?.profilePic 
+                                                      ? `${user.profile.profilePic}`
+                                                      : ""} alt="it's me" />
+                                                      
                           {user.username}
                           {index < AssignedTo.length - 1 && ', '}
                       </span>

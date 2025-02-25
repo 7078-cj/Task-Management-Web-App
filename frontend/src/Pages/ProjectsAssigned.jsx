@@ -41,7 +41,7 @@ function ProjectsAssigned() {
         <>
         <Navbar/>
 
-          <div className='grid grid-cols-[20%_60%_20%]'>
+          <div className='grid grid-cols-[10%_70%_20%]'>
             <SideBar/>
             <div>
                 <div className="ml-10 text-2xl font-semibold text-gray-800 mb-4">Projects Assigned</div>

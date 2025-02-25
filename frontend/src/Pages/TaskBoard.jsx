@@ -5,6 +5,7 @@ import SideBar from '../components/SideBar'
 import Task from '../components/Task'
 
 import AuthContext from '../Context/AuthContext'
+import { Progress } from '@mantine/core'
 
 
 function TaskBoard() {
@@ -325,7 +326,7 @@ function TaskBoard() {
             <div>
             <div className='flex items-center gap-4'>
               <div className='w-[900px] h-5 bg-slate-400 rounded-lg'>
-              <div className='bg-green-400 h-5 rounded-lg'  style={{ width:`${progress}%` }}></div>
+              <Progress color="cyan" size="xl" value={progress} striped />
             </div>
             <h1 className=' '>{progress}%</h1>
             </div>

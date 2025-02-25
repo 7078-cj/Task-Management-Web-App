@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import { use } from 'react'
 import { Link } from 'react-router-dom'
 import AuthContext from '../Context/AuthContext'
+import { Progress } from '@mantine/core'
 
 function Project({id,ProjectName,tasks,completedTasks,ProjectManager}) {
 
@@ -134,10 +135,7 @@ function Project({id,ProjectName,tasks,completedTasks,ProjectManager}) {
         <div className="text-black text-sm font-bold">{progress}%</div>
       </div>
       <div className="w-full bg-gray-200 h-2 rounded-sm overflow-hidden">
-        <div
-          className="h-2 bg-green-300"
-          style={{ width: `${progress}%` }}
-        ></div>
+      <Progress color="cyan" size="xl" value={progress} striped />
       </div>
       <div className="flex justify-between mt-2 text-gray-500 text-xs font-medium">
         <span>Completed Tasks</span>

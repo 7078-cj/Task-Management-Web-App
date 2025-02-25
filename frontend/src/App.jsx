@@ -10,13 +10,16 @@ import Home from './Pages/Home'
 import PrivateRoutes from './Context/PrivateRoutes'
 import TaskBoard from './Pages/TaskBoard'
 import ProjectsAssigned from './Pages/ProjectsAssigned'
+import '@mantine/core/styles.css';
 
+import { MantineProvider } from '@mantine/core';
 
 function App() {
   const [count, setCount] = useState(0)
 
   return (
     <>
+    <MantineProvider>
       <Router>
         <AuthProvider>
           <Routes>
@@ -43,6 +46,7 @@ function App() {
           </Routes>
         </AuthProvider>
     </Router>
+    </MantineProvider>
     </>
   )
 }

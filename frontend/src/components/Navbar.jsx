@@ -1,10 +1,13 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import AuthContext from '../Context/AuthContext'
 import { Link } from 'react-router-dom'
+import { Avatar, CloseButton, Notification } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import { Drawer, Button } from '@mantine/core';
 
 function Navbar() {
 
-    var [handleProfileClick,setHandleProfileClick] = useState(false)
+    
     var [handleNotifClick,setHandleNotifClick] = useState(false)
     const [isEditing, setIsEditing] = useState(false);
 
@@ -14,20 +17,14 @@ function Navbar() {
 
     const [notifs,setNotifs] = useState([])
     const [newNotifs,setNewNotifs] = useState(false)
-    const {user,authTok} = useContext(AuthContext)
+    const {user,authTok,logOut} = useContext(AuthContext)
     const [profile,setProfile] = useState()
     
-    const prof = useRef()
+    
     const notif = useRef()
     const socketRef = useRef(null);
 
     useEffect(()=>{
-
-        const handleClickOutsideprofile = (event) => {
-            if (prof.current && !prof.current.contains(event.target)) {
-                setHandleProfileClick(false);
-            }
-          };
 
           const handleClickOutsidenotif = (event) => {
             if (notif.current && !notif.current.contains(event.target)) {
@@ -37,11 +34,11 @@ function Navbar() {
           };
 
           
-          document.addEventListener('mousedown', handleClickOutsideprofile);
+          
           document.addEventListener('mousedown', handleClickOutsidenotif);
           return () => {
         
-            document.removeEventListener('mousedown', handleClickOutsideprofile);
+            
             document.removeEventListener('mousedown', handleClickOutsidenotif);
         };
 
@@ -187,7 +184,8 @@ function Navbar() {
     }
     
 
-    
+    const [opened, { open, close }] = useDisclosure(false);
+
   return (
     <div  className='flex items-center justify-around p-5'>
         <h1>7078</h1>
@@ -212,17 +210,20 @@ function Navbar() {
                     <h4 className="font-bold text-lg">Notifications</h4>
                     <hr className="my-2" />
                     {notifs.length > 0 ? (
-                        <ul>
+                        <ul className='flex flex-col gap-3 '>
                             {notifs.map((notif, index) => (
-                                <div className='flex flex-row gap-5'>
+                                <div className='flex flex-row gap-5 items-center justify-center'>
                                     <a href={`/taskboard/${notif.project.id}`}>
-                                        <li key={index} className="p-2 border-b last:border-none hover:bg-gray-100">
+                                        {/* <li key={index} className="p-2 border-b last:border-none hover:bg-gray-100">
                                             {notif.message}
                                             
-                                        </li>
+                                        </li> */}
+                                        <Notification withCloseButton={false} withBorder title="New Task Assigned">
+                                            {notif.message}
+                                        </Notification>
                                 
                                     </a>
-                                    <button onClick={() => handleNotiifDelete(notif.id)}>X</button>
+                                    <CloseButton onClick={()=>{handleNotiifDelete(notif.id)}} />
                                 </div>
                             ))}
                         </ul>
@@ -234,22 +235,21 @@ function Navbar() {
         </div>
             
             
-            <div className='flex items-center gap-3' >
-                <img src={profile?.profile?.profilePic 
+            <div className='flex items-center gap-3'>
+                {/* <img src={profile?.profile?.profilePic 
                             ? `http://127.0.0.1:8000${profile.profile.profilePic}`
                             : "https://via.placeholder.com/100"} 
                     alt="Profile"
-                    className='rounded-full w-20 h-20'  />
-                <div ref={prof}>
-                    <h1 onClick={
-                        () => {
-                            setHandleProfileClick(!handleProfileClick)
-                        }
-                    }>{profile?.username}</h1>
+                    className='rounded-full w-20 h-20'  /> */}
+                     <Avatar  src={profile?.profile?.profilePic 
+                            ? `http://127.0.0.1:8000${profile.profile.profilePic}`
+                            : "https://via.placeholder.com/100"} alt="it's me" />
+                <div >
+                    <h1  onClick={open}>{profile?.username}</h1>
 
 
-                    {handleProfileClick && (
-                        <div className="absolute bg-white shadow-md p-4 rounded-md mt-2 z-50">
+                    
+                        <Drawer opened={opened} onClose={close} title="Profile" >
                             {isEditing ? (
                                 <form className='' onSubmit={handleSave} encType="multipart/form-data">
                                     ProfilePic: 
@@ -295,15 +295,17 @@ function Navbar() {
                                     </button>
                                 </div>
                             )}
-                               </div>
-                    )}
+                               </Drawer>
+                    
                   
                 
                 </div>
 
                 
             </div>
+            <Button fullWidth variant="filled" color="rgba(250, 150, 150, 1)" onClick={()=>{logOut()}}>LogOut</Button>
         </div>
+        
     </div>
   )
 }
