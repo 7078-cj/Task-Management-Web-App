@@ -5,7 +5,7 @@ import SideBar from '../components/SideBar'
 import Task from '../components/Task'
 
 import AuthContext from '../Context/AuthContext'
-import { Progress } from '@mantine/core'
+import { Progress, ScrollArea } from '@mantine/core'
 
 
 function TaskBoard() {
@@ -441,6 +441,9 @@ function TaskBoard() {
           <div className=' bg-blue-100 m-2'>
             <h1 className='h-10 bg-blue-400 text-white text-xl text-center pt-1' >Pending</h1>
             <div className='overflow-y-auto max-h-[600px] m-5'>
+            <ScrollArea h={600}>
+      {/* ... content */}
+    
             {pendingTasks.map((task, index) => (
                 <Task TaskID={task.id} 
                       TaskName={task.taskName} 
@@ -454,13 +457,16 @@ function TaskBoard() {
                       ProjectManager={project.projectManager.username}/>
             ))}
               
-              
+              </ScrollArea>
             </div>
           </div>
             
           <div className='bg-orange-100 m-2'>
             <h1 className='h-10 bg-amber-400 text-white text-xl text-center pt-1'>In Progress</h1>
             <div className='overflow-y-auto max-h-[600px] m-5'>
+            <ScrollArea h={600}>
+      {/* ... content */}
+    
             {inProgressTasks.map((task, index) => (
                 <Task TaskID={task.id} 
                       TaskName={task.taskName} 
@@ -472,12 +478,16 @@ function TaskBoard() {
                       deleteFunc={handleDelete}
                       ProjectManager={project.projectManager.username}/>
             ))}
+            </ScrollArea>
             </div>
           </div>
 
           <div className='bg-red-100 m-2'>
             <h1 className='h-10 bg-red-400 text-white text-xl text-center pt-1'>On Hold</h1>
             <div className='overflow-y-auto max-h-[600px] m-5'>
+            <ScrollArea h={600}>
+      {/* ... content */}
+    
             {onHoldTasks.map((task, index) => (
                 <Task TaskID={task.id} 
                       TaskName={task.taskName} 
@@ -490,13 +500,16 @@ function TaskBoard() {
                       deleteFunc={handleDelete}
                       ProjectManager={project.projectManager.username}/>
             ))}
-           
+           </ScrollArea>
             </div>
           </div>
 
           <div className='bg-teal-100 m-2'>
             <h1 className='h-10 bg-teal-400 text-white text-xl text-center pt-1'>Completed</h1>
             <div className='overflow-y-auto max-h-[600px] m-5'>
+            <ScrollArea h={600}>
+      {/* ... content */}
+    
             {completedTasks.map((task, index) => (
                 <Task TaskID={task.id} 
                       TaskName={task.taskName} 
@@ -509,6 +522,7 @@ function TaskBoard() {
                       deleteFunc={handleDelete}
                       ProjectManager={project.projectManager.username}/>
             ))}
+            </ScrollArea>
             </div>
           </div>
         </div>

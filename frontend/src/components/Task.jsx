@@ -2,7 +2,9 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 
 import { Box, Dialog, Modal } from '@mui/material'
 import AuthContext from '../Context/AuthContext';
-import { Avatar } from '@mantine/core';
+import { Avatar, Blockquote, ScrollArea } from '@mantine/core';
+import { Modal as MD, Button } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 
 
 function Task({TaskID,TaskName,TaskDescription,TaskStatus,AssignedTo=[],AssignedToAvatar,DueDate,projectID,updateFunc,deleteFunc,ProjectManager}) {
@@ -60,22 +62,30 @@ function Task({TaskID,TaskName,TaskDescription,TaskStatus,AssignedTo=[],Assigned
     }
     
     
-  
+    const [opened, { open, close }] = useDisclosure(false);
+
   return (
     <div className="bg-white rounded-lg p-4 shadow m-3">
       <div className="flex justify-between mb-2">
         <div className='flex flex-col'>
           <h3 className="text-lg font-semibold">{TaskName}</h3>
-          <span className="text-gray-600 max-h-[20px] m-5 p-4">{TaskDescription}</span>
+          
+          <MD opened={opened} onClose={close} title="Task Description">
+            {TaskDescription}
+          </MD>
+
+          <div className='p-4'>
+            <Button variant="default" onClick={open}>
+              Task Description
+            </Button>
+          </div>
+          
+          
         </div>
         
         <div className='flex flex-row gap-2'>
            {AssignedTo.some(assignedUser => assignedUser.username === user.username)||ProjectManager == user.username ? <div className="text-gray-500" ref={taskMenu} onClick={()=>{setTaskClick(true)}}><div>...</div></div>:<></>}
             
-            
-            
-            
-
             {ProjectManager == user.username ?<>
             <box-icon name='message-square-x' onClick={()=>{setHandleDelete(true)}} ></box-icon>
             <Modal open={handleDelete} onClose={()=>{setHandleDelete(false)}} >
@@ -148,22 +158,19 @@ function Task({TaskID,TaskName,TaskDescription,TaskStatus,AssignedTo=[],Assigned
 
       <div className="flex items-center mb-4">
         <span className={`${statusColor} text-white px-2 py-1 rounded-full mr-2`}>{TaskStatus}</span>
-        
-        
       </div>
-
-      
-
-      
 
       <div className="flex flex-col items-center mt-4">
         <div className="flex flex-row">
          
           
           <span className="text-gray-600">
+          <ScrollArea h={100}>
+      {/* ... content */}
+    
               Assigned to: {Array.isArray(AssignedTo) && AssignedTo.length > 0 ? (
                   AssignedTo.map((user, index) => (
-                      <span key={index}>
+                      <span key={index} className='flex flex-row gap-2 p-2'>
                           <Avatar src={user.profile?.profilePic 
                                                       ? `${user.profile.profilePic}`
                                                       : ""} alt="it's me" />
@@ -175,7 +182,9 @@ function Task({TaskID,TaskName,TaskDescription,TaskStatus,AssignedTo=[],Assigned
               ) : (
                   <span>No users assigned</span>
               )}
+              </ScrollArea>
           </span>
+          
         </div>
 
         {/* <div class="flex flex-row items-center mt-2 absolute">
